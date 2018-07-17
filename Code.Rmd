@@ -1,0 +1,48 @@
+---
+title: "Shiny Project"
+author: "Thomas Deegan"
+date: "July 17, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+#Proof of Concept for plotting geochart and column chart from fdi df
+fdi.Out.US.2011 <- filter(fdi, Reporting.country == "United States", Year == 2011, MEASURE_PRINCIPLE == "DO")
+
+top10 <- fdi.Out.US.2011 %>%
+    group_by(.,Partner.country.territory) %>%
+    summarize(.,Total = sum(Value)) %>%
+    arrange(.,desc(Total))
+
+top10 <- data.frame(top10)
+
+US2011 <- gvisGeoChart(top10, 'Partner.country.territory','Total')
+plot(US2011)
+
+my_options <- list(width="1200px", height="300px",
+                   title="Foreign Direct Investment (Outflow)",
+                   hAxis="{title:'Destination'}",
+                   vAxis="{title:'$USD (in millions)'}")
+
+Column <- gvisColumnChart(top10[1:10,], options=my_options)
+
+plot(Column)
+```
+
+## R Markdown
+
+
+
+```{r cars}
+
+```
+
+## Including Plots
+
+```{r pressure, echo=FALSE}
+
+```
+
+
