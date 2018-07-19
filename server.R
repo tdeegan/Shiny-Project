@@ -15,7 +15,8 @@ shinyServer(function(input, output){
     
     top10 <- data.frame(top10)
     
-    gvisGeoChart(top10, 'Partner.country.territory','Total')
+    gvisGeoChart(top10, 'Partner.country.territory','Total',
+                 options = list(width = "auto", height = "auto"))
     
   })
   
@@ -31,12 +32,12 @@ shinyServer(function(input, output){
     
     top10 <- data.frame(top10)
     
-    my_options <- list(width="1200px", height="300px",
+    my_options <- list(width="600px", height="300px",
                        title="Foreign Direct Investment",
                        hAxis="{title:'Destination'}",
                        vAxis="{title:'$USD (in millions)'}")
     
-    gvisColumnChart(top10[1:10,], options=my_options)
+    gvisColumnChart(top10[1:7,], options=my_options)
   })
   
   
