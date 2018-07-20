@@ -19,14 +19,19 @@ shinyUI(dashboardPage(
         #),
         tabItems(
             tabItem(tabName = "I",
-                      fluidRow(column(6,sliderInput("year_selected", 
+                      fluidRow(column(6,sliderInput("year_selectedI", 
                                             label = h3("Year"), 
                                             min = 2005, max = 2016, 
                                             value = 2011, sep=""))),
-                      fluidRow(box(htmlOutput("map"), height = 300),
-                               box(htmlOutput("hist"), height = 300))),
-            tabItem(tabName = "O")
-                    #,fluidRow() to be replaced
+                      fluidRow(box(htmlOutput("mapI"), height = 300),
+                               box(htmlOutput("histI"), height = 300))),
+            tabItem(tabName = "O",
+                    fluidRow(column(6,sliderInput("year_selectedO", 
+                                                  label = h3("Year"), 
+                                                  min = 2005, max = 2016, 
+                                                  value = 2011, sep=""))),
+                    fluidRow(box(htmlOutput("mapO"), height = 300),
+                             box(htmlOutput("histO"), height = 300)))
                     
         )
     )
