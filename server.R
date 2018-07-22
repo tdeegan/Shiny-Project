@@ -45,9 +45,9 @@ shinyServer(function(input, output, session){
     top10 <- data.frame(top10)
     
     gvisGeoChart(top10, 'Partner.country.territory','Total',
-                 options = list(title = "Temp Title",
-                                width = "auto", 
-                                height = "auto", 
+                 options = list(width = "auto", 
+                                height = "auto",
+                                legend.title = "Foreign Direct Investment",
                                 displayMode = "markers",
                                 resolution = "countries",
                                 magnifyingGlass.enable = TRUE,
@@ -70,8 +70,10 @@ shinyServer(function(input, output, session){
     
     top10 <- data.frame(top10)
     
-    my_options <- list(title="Foreign Direct Investment",
-                       hAxis="{title:'Destination'}",
+    my_options <- list(height = '425px',
+                       width = '425px',
+                       title="Foreign Direct Investment",
+                       hAxis="{title:'Destination', viewWindowMode: 'pretty'}",
                        vAxis="{title:'$USD (in millions)'}",
                        legend = "bottom")
     
@@ -95,7 +97,7 @@ shinyServer(function(input, output, session){
     
     mp <- ifelse(input$dsel == "Inflows","DI","DO")
     
-    fdi.sub <- filter(fdi, Reporting.country == input$ctry_sel, 
+    fdi.sub <- filter(fdi, Reporting.country == input$ctry_sel2, 
                       Year %in% c(input$years_selected[1]:input$years_selected[2]), 
                       MEASURE_PRINCIPLE == mp,
                       Partner.country.territory == input$text1 | 
@@ -109,11 +111,19 @@ shinyServer(function(input, output, session){
     top10 <- data.frame(top10)
     top10 <- top10 %>% spread(Year, Total)
     
-    my_options <- list(title="Foreign Direct Investment",
+    my_options <- list(height = 'auto',
+                       width = 'auto',
+                       title=paste("Foreign Direct Investment", input$dsel),
                        hAxis="{title:'Destination'}",
                        vAxis="{title:'$USD (in millions)'}")
     
-    gvisColumnChart(top10, options=my_options)
+    if(dim(top10)[1] == 0){
+      df <- data.frame(Names = c(input$text1,input$text2),Total = c(0,0))
+      gvisColumnChart(df)
+    } else{
+      gvisColumnChart(top10, options=my_options)
+    }
+    
   })
   
 })
