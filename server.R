@@ -1,5 +1,6 @@
 library(shinydashboard)
 library(DT)
+library(tidyr)
 
 shinyServer(function(input, output, session){
   
@@ -44,7 +45,13 @@ shinyServer(function(input, output, session){
     top10 <- data.frame(top10)
     
     gvisGeoChart(top10, 'Partner.country.territory','Total',
-                 options = list(width = "auto", height = "auto"))
+                 options = list(title = "Temp Title",
+                                width = "auto", 
+                                height = "auto", 
+                                displayMode = "markers",
+                                resolution = "countries",
+                                magnifyingGlass.enable = TRUE,
+                                magnifyingGlass.zoomFactor = 3.0))
     
   })
   
@@ -63,12 +70,50 @@ shinyServer(function(input, output, session){
     
     top10 <- data.frame(top10)
     
-    my_options <- list(width="600px", height="300px",
-                       title="Foreign Direct Investment",
+    my_options <- list(title="Foreign Direct Investment",
+                       hAxis="{title:'Destination'}",
+                       vAxis="{title:'$USD (in millions)'}",
+                       legend = "bottom")
+    
+    gvisColumnChart(top10[1:7,], options=my_options)
+  })
+  
+  output$Total <- renderInfoBox({
+    
+    mp <- ifelse(input$dsel == "Inflows","DI","DO")
+    
+    value <- sum(fdi[fdi$Reporting.country == input$ctry_sel 
+                     & fdi$Year == input$year_selected 
+                     & fdi$MEASURE_PRINCIPLE == mp,]$Value)
+    
+    value <- formatC(value, format="d", big.mark=",")
+    
+    infoBox(paste("Total",input$dsel, "(USD Millions)"),value,icon=icon("calculator"),fill=TRUE)
+  })
+  
+  output$histC <- renderGvis({
+    
+    mp <- ifelse(input$dsel == "Inflows","DI","DO")
+    
+    fdi.sub <- filter(fdi, Reporting.country == input$ctry_sel, 
+                      Year %in% c(input$years_selected[1]:input$years_selected[2]), 
+                      MEASURE_PRINCIPLE == mp,
+                      Partner.country.territory == input$text1 | 
+                        Partner.country.territory == input$text2)
+    
+    top10 <- fdi.sub %>%
+      group_by(.,Partner.country.territory, Year) %>%
+      summarize(.,Total = sum(Value)) %>%
+      arrange(.,desc(Total))
+    
+    top10 <- data.frame(top10)
+    top10 <- top10 %>% spread(Year, Total)
+    
+    my_options <- list(title="Foreign Direct Investment",
                        hAxis="{title:'Destination'}",
                        vAxis="{title:'$USD (in millions)'}")
     
-    gvisColumnChart(top10[1:7,], options=my_options)
+    gvisColumnChart(top10, options=my_options)
   })
   
 })
