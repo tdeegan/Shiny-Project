@@ -13,7 +13,7 @@ shinyServer(function(input, output, session){
       filter(.,Total > 0) 
     
     ls <- as.vector(ls$Reporting.country)
-      
+    
     if(!(input$ctry_sel %in% ls)){
       updateSelectizeInput(
         session, "ctry_sel",
@@ -44,14 +44,27 @@ shinyServer(function(input, output, session){
     
     top10 <- data.frame(top10)
     
-    gvisGeoChart(top10, 'Partner.country.territory','Total',
-                 options = list(width = "auto", 
-                                height = "auto",
-                                legend.title = "Foreign Direct Investment",
-                                displayMode = "markers",
-                                resolution = "countries",
-                                magnifyingGlass.enable = TRUE,
-                                magnifyingGlass.zoomFactor = 3.0))
+    if(dim(top10)[1] < 20){
+      gvisGeoChart(top10, 'Partner.country.territory','Total',
+                   options = list(width = "auto", 
+                                  height = "auto",
+                                  legend.title = "Foreign Direct Investment",
+                                  displayMode = "markers",
+                                  resolution = "countries",
+                                  magnifyingGlass.enable = TRUE,
+                                  magnifyingGlass.zoomFactor = 3.0))
+      
+    }else{
+      gvisGeoChart(top10[1:20,], 'Partner.country.territory','Total',
+                   options = list(width = "auto", 
+                                  height = "auto",
+                                  legend.title = "Foreign Direct Investment",
+                                  displayMode = "markers",
+                                  resolution = "countries",
+                                  magnifyingGlass.enable = TRUE,
+                                  magnifyingGlass.zoomFactor = 3.0))
+      
+    }
     
   })
   
