@@ -88,7 +88,7 @@ shinyServer(function(input, output, session){
                        title="Foreign Direct Investment",
                        hAxis="{title:'Destination', viewWindowMode: 'pretty'}",
                        vAxis="{title:'$USD (in millions)'}",
-                       legend = "bottom")
+                       legend = "None")
     
     gvisColumnChart(top10[1:7,], options=my_options)
   })
@@ -136,6 +136,42 @@ shinyServer(function(input, output, session){
     } else{
       gvisColumnChart(top10, options=my_options)
     }
+    
+  })
+  
+  output$histU <- renderGvis({
+    
+    mp <- ifelse(input$dsel == "Inflows","DI","DO")
+    
+    test <- fdi %>%
+      filter(.,MEASURE_PRINCIPLE == mp, Year == input$uyears_selected) %>%
+      group_by(.,Reporting.country, Partner.country.territory) %>%
+      summarize(.,Total = sum(Value)) %>%
+      top_n(.,1,Total) %>%
+      arrange(.,desc(Total))
+    
+    test2 <- fdi %>%
+      filter(.,MEASURE_PRINCIPLE == mp, Year == input$uyears_selected) %>%
+      group_by(.,Reporting.country) %>%
+      summarize(.,S = sum(Value)) %>%
+      arrange(.,desc(S))
+    
+    t <- inner_join(test2, test, by = "Reporting.country")
+    
+    t$Percent <- (t$Total / t$S) *100
+    
+    
+    col1 <- "Nation"
+    col2 <- ifelse(mp == "DI","Total Inflows", 
+                   "Total Outflows")
+    col3 <- ifelse(mp == "DI","Leading Provider", 
+                   "Leading Recipient")
+    col4 <- ifelse(mp == "DI","Leading Provider Total", 
+                   "Leading Recipient Total")
+    
+    names(t) <- c(col1,col2,col3,col4, "Percent")
+    
+    gvisTable(t[1:15,], formats = list(Percent = "#.#"))
     
   })
   

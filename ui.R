@@ -1,13 +1,14 @@
 library(shinydashboard)
 
 shinyUI(dashboardPage(
-    dashboardHeader(title = "OECD Bilateral FDI"),
+    dashboardHeader(title = "OECD FDI"),
     dashboardSidebar(
         
-        sidebarUserPanel("Thomas Deegan", image = "money_globe.jpg"),
+        sidebarUserPanel("Thomas Deegan"),
         sidebarMenu(
-            menuItem("Summary", tabName = "Summ", icon = icon("handshake-o")),
-            menuItem("Compare", tabName = "Comp", icon = icon("handshake-o"))
+            menuItem("Summary by Partner", tabName = "Summ", icon = icon("handshake-o")),
+            menuItem("Partner Comparison", tabName = "Comp", icon = icon("handshake-o")),
+            menuItem("Global Summary", tabName = "USumm", icon =icon("handshake-o"))
         ),
         selectizeInput("dsel",
                        "Select Direction",
@@ -46,7 +47,13 @@ shinyUI(dashboardPage(
                              column(2, textInput("text2",
                                             label = h3("Enter nation to Compare"),
                                             value = "India"))),
-                    fluidRow(box(htmlOutput("histC"), height = 400)))
+                    fluidRow(box(htmlOutput("histC"), height = 400))),
+            tabItem(tabName = "USumm",
+                    fluidRow(column(4, sliderInput("uyears_selected",
+                                                   label = h3("Year Range"),
+                                                   min = 2005, max = 2016,
+                                                   value = 2016, sep=""))),
+                    fluidRow(box(htmlOutput("histU"), width = 7)))
                     
         )
     )
